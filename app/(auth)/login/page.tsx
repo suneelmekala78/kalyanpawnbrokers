@@ -35,7 +35,9 @@ export default function LoginPage() {
       });
 
       if (!res.ok) {
-        const payload = (await res.json().catch(() => null)) as { message?: string } | null;
+        const payload = (await res.json().catch(() => null)) as {
+          message?: string;
+        } | null;
         toast.error(payload?.message || "Failed to login");
         return;
       }
@@ -83,7 +85,9 @@ export default function LoginPage() {
       <section className="flex items-center justify-center px-6 py-12">
         <div className="w-full max-w-md">
           <div className="mb-8">
-            <p className="text-sm font-semibold text-[var(--primary)]">Sign in</p>
+            <p className="text-sm font-semibold text-[var(--primary)]">
+              Sign in
+            </p>
             <h2 className="text-3xl font-extrabold text-black">Admin Login</h2>
             <p className="mt-2 text-sm text-gray-600">
               Enter your credentials to access the dashboard.
@@ -92,7 +96,9 @@ export default function LoginPage() {
 
           <form className="space-y-5" onSubmit={handleSubmit}>
             <div>
-              <label className="text-sm font-semibold text-gray-700">Email address</label>
+              <label className="text-sm font-semibold text-gray-700">
+                Email address
+              </label>
               <input
                 type="email"
                 value={email}
@@ -103,7 +109,9 @@ export default function LoginPage() {
             </div>
 
             <div>
-              <label className="text-sm font-semibold text-gray-700">Password</label>
+              <label className="text-sm font-semibold text-gray-700">
+                Password
+              </label>
               <div className="relative mt-2">
                 <input
                   type={showPassword ? "text" : "password"}
@@ -118,7 +126,11 @@ export default function LoginPage() {
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
                   aria-label={showPassword ? "Hide password" : "Show password"}
                 >
-                  {showPassword ? <HiEyeOff className="text-lg" /> : <HiEye className="text-lg" />}
+                  {showPassword ? (
+                    <HiEyeOff className="text-lg" />
+                  ) : (
+                    <HiEye className="text-lg" />
+                  )}
                 </button>
               </div>
               <div className="mt-2 text-right">
@@ -131,7 +143,11 @@ export default function LoginPage() {
               </div>
             </div>
 
-            <button type="submit" className="btn-primary w-full" disabled={submitting}>
+            <button
+              type="submit"
+              className={`btn-primary w-full ${submitting ? "opacity-50" : "cursor-pointer"}`}
+              disabled={submitting}
+            >
               {submitting ? "Signing in..." : "Sign in"}
             </button>
           </form>

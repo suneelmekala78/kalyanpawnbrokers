@@ -1,6 +1,47 @@
+"use client";
+
 import Link from "next/link";
+import { useState } from "react";
+import { toast } from "sonner";
 
 export default function ForgotPasswordPage() {
+  const [email, setEmail] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    if (!email.trim()) {
+      toast.error("Email is required");
+      return;
+    }
+
+    setSubmitting(true);
+
+    try {
+      const response = await fetch("/api/auth/forgot-password", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email: email.trim() }),
+      });
+
+      const payload = (await response.json().catch(() => null)) as {
+        message?: string;
+      } | null;
+
+      if (!response.ok) {
+        toast.error(payload?.message || "Failed to send reset link");
+        return;
+      }
+
+      toast.success(payload?.message || "Reset link generated");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   return (
     <main className="min-h-screen grid lg:grid-cols-[1.1fr_0.9fr] bg-white">
       <section className="relative hidden lg:flex flex-col justify-between p-12 bg-[radial-gradient(circle_at_top,_#f5e9ff,_#ffffff_55%)]">
@@ -21,7 +62,9 @@ export default function ForgotPasswordPage() {
             <p className="mt-2 text-base font-semibold text-black">
               Contact the admin team for assistance.
             </p>
-            <p className="text-sm text-gray-500">Support: +91 80000 00000</p>
+            <p className="text-sm text-gray-500">
+              Support: {process.env.NEXT_PUBLIC_CONTACT_NUMBER}
+            </p>
           </div>
         </div>
 
@@ -42,25 +85,34 @@ export default function ForgotPasswordPage() {
             </p>
           </div>
 
-          <form className="space-y-5">
+          <form className="space-y-5" onSubmit={handleSubmit}>
             <div>
               <label className="text-sm font-semibold text-gray-700">
                 Email address
               </label>
               <input
                 type="email"
+                value={email}
+                onChange={(event) => setEmail(event.target.value)}
                 placeholder="you@company.com"
                 className="input mt-2"
               />
             </div>
 
-            <button type="submit" className="btn-primary w-full">
-              Send reset link
+            <button
+              type="submit"
+              className={`btn-primary w-full ${submitting ? "opacity-50" : "cursor-pointer"}`}
+              disabled={submitting}
+            >
+              {submitting ? "Sending..." : "Send reset link"}
             </button>
 
-            <button type="button" className="btn-outline w-full">
+            <Link
+              href="/contact-admin"
+              className="btn-outline w-full text-center"
+            >
               Contact admin
-            </button>
+            </Link>
           </form>
 
           <div className="mt-6 text-sm text-gray-600">

@@ -165,6 +165,20 @@ export default function LoansTable({
 
               <div className="space-y-2 text-sm">
                 <p>
+                  <span className="text-gray-500">Loan ID: </span>
+                  {loan.loanId ? (
+                    <button
+                      type="button"
+                      onClick={() => router.push(`/loans/${loan._id}`)}
+                      className="font-semibold hover:text-[var(--primary)] cursor-pointer"
+                    >
+                      {loan.loanId}
+                    </button>
+                  ) : (
+                    <span className="font-semibold">-</span>
+                  )}
+                </p>
+                <p>
                   <span className="text-gray-500">Principal: </span>
                   <span className="font-semibold">₹{loan.principal.toLocaleString()}</span>
                 </p>
@@ -225,6 +239,7 @@ export default function LoansTable({
             <thead className="bg-[var(--primary)] text-white uppercase text-xs">
               <tr>
                 <th className="p-4 text-left w-[60px]">#</th>
+                <th className="p-4 text-left">Loan ID</th>
                 <th className="p-4 text-left">Client</th>
                 <th className="p-4 text-left">Principal</th>
                 <th className="p-4 text-left">Total Due</th>
@@ -243,6 +258,20 @@ export default function LoansTable({
                   className="border-t hover:bg-gray-50 transition"
                 >
                   <td className="p-4 font-semibold text-gray-500">{index + 1}</td>
+
+                  <td className="p-4 text-xs font-semibold text-gray-700">
+                    {loan.loanId ? (
+                      <button
+                        type="button"
+                        onClick={() => router.push(`/loans/${loan._id}`)}
+                        className="hover:text-[var(--primary)] cursor-pointer"
+                      >
+                        {loan.loanId}
+                      </button>
+                    ) : (
+                      "-"
+                    )}
+                  </td>
 
                   <td className="p-4">
                     <button

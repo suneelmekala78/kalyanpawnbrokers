@@ -5,6 +5,7 @@ type LoanStatus = "active" | "closed";
 interface LoanDocument {
   userId: mongoose.Types.ObjectId;
   clientId: mongoose.Types.ObjectId;
+  loanId: string;
   clientName?: string;
   phone?: string;
   pledgedProperties: string[];
@@ -27,6 +28,7 @@ const LoanSchema = new Schema<LoanDocument>(
       ref: "Client",
       required: true,
     },
+    loanId: { type: String, required: true, trim: true },
     clientName: { type: String, default: "" },
     phone: { type: String, default: "" },
     pledgedProperties: [{ type: String }],
@@ -65,6 +67,12 @@ if (existingLoanModel) {
     });
   }
 
+  if (!existingLoanModel.schema.path("loanId")) {
+    existingLoanModel.schema.add({
+      loanId: { type: String, required: true, trim: true },
+    });
+  }
+
   if (!existingLoanModel.schema.path("pledgedProperties")) {
     existingLoanModel.schema.add({
       pledgedProperties: [{ type: String }],
@@ -74,5 +82,6 @@ if (existingLoanModel) {
 
 LoanSchema.index({ userId: 1, clientId: 1, createdAt: -1 });
 LoanSchema.index({ userId: 1, status: 1, createdAt: -1 });
+LoanSchema.index({ userId: 1, loanId: 1 }, { unique: true });
 
 export const Loan = existingLoanModel || model<LoanDocument>("Loan", LoanSchema);

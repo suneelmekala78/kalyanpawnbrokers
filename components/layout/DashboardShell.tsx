@@ -4,8 +4,10 @@ import Sidebar from "./Sidebar";
 import Topbar from "./Topbar";
 
 export default function DashboardShell({
+  userName,
   children,
 }: {
+  userName: string;
   children: React.ReactNode;
 }) {
   return (
@@ -13,7 +15,7 @@ export default function DashboardShell({
       <Sidebar onClose={() => {}} />
 
       <div className="flex-1 flex flex-col">
-        <Topbar />
+        <Topbar userName={userName} />
         <main className="p-6 pb-24 md:pb-6">{children}</main>
       </div>
     </div>

@@ -23,6 +23,54 @@ const loanSchema = z.object({
   forceNewClient: z.boolean().optional().default(false),
 });
 
+function getLoanIdNameSegment(input: string) {
+  const cleaned = sanitizeText(input).replace(/[^a-zA-Z]/g, "").toUpperCase();
+  return (cleaned || "USER").slice(0, 4).padEnd(4, "X");
+}
+
+async function buildLoanId({
+  userId,
+  clientName,
+}: {
+  userId: string;
+  clientName: string;
+}) {
+  const now = new Date();
+  const day = String(now.getDate()).padStart(2, "0");
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+  const year = String(now.getFullYear());
+  const namePart = getLoanIdNameSegment(clientName);
+  const datePart = `${day}${month}${year}`;
+
+  const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const startOfNextDay = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+
+  const todayCount = await Loan.countDocuments({
+    userId,
+    createdAt: {
+      $gte: startOfDay,
+      $lt: startOfNextDay,
+    },
+  });
+
+  let sequence = todayCount + 1;
+  let loanId = "";
+
+  while (true) {
+    const sequencePart = String(sequence).padStart(2, "0");
+    loanId = `LID${datePart}${namePart}${sequencePart}`;
+
+    const exists = await Loan.exists({ userId, loanId });
+    if (!exists) {
+      break;
+    }
+
+    sequence += 1;
+  }
+
+  return loanId;
+}
+
 export async function GET(req: Request) {
   try {
     const auth = await requireAuth(req);
@@ -104,9 +152,15 @@ export async function POST(req: Request) {
       });
     }
 
+    const loanId = await buildLoanId({
+      userId: auth.userId,
+      clientName: clientDoc.name,
+    });
+
     const loan = await Loan.create({
       userId: auth.userId,
       clientId: clientDoc._id,
+      loanId,
       clientName: clientDoc.name,
       phone: clientDoc.phone,
       pledgedProperties: parsed.data.pledgedProperties,

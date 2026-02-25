@@ -66,6 +66,7 @@ export default function LoanDetailsPage({ id }: { id: string }) {
 
   const totalPaid = payments.reduce((s, p) => s + p.amount, 0);
   const totalDue = loan.totalAmount ?? loan.principal;
+  const interestAmount = loan.accruedInterest ?? Math.max(totalDue - loan.principal, 0);
   const balance = Math.max(totalDue - totalPaid, 0);
   const isLoanClosed = loan.status === "closed" || balance === 0;
   const loanStatusLabel = isLoanClosed ? "Closed" : "Active";
@@ -148,7 +149,7 @@ export default function LoanDetailsPage({ id }: { id: string }) {
         <div className="mb-4 flex items-start justify-between gap-4">
           <div>
             <h2 className="text-xl font-bold">{loan.clientName}</h2>
-            <p className="mt-1 text-xs text-gray-500">Loan ID: {loan._id}</p>
+            <p className="mt-1 text-xs text-gray-500">Loan ID: {loan.loanId || "-"}</p>
           </div>
 
           <span className={`inline-flex items-center gap-1 rounded-full border px-3 py-1 text-xs font-semibold ${loanStatusStyle}`}>
@@ -161,36 +162,47 @@ export default function LoanDetailsPage({ id }: { id: string }) {
           </span>
         </div>
 
-        <div className="mb-4 grid gap-3 sm:grid-cols-3">
-          <div className="rounded-lg border border-black/10 bg-gray-50 p-3">
-            <p className="inline-flex items-center gap-1 text-xs text-gray-500">
+        <div className="mb-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="rounded-xl border border-black/10 bg-gray-50 p-4">
+            <p className="inline-flex items-center gap-1 text-[11px] font-semibold uppercase tracking-wide text-gray-500">
               <HiScale className="text-sm" /> Principal
             </p>
-            <p className="mt-1 text-lg font-bold">₹{loan.principal.toLocaleString()}</p>
+            <p className="mt-2 text-xl font-extrabold text-black">₹{loan.principal.toLocaleString()}</p>
           </div>
 
-          <div className="rounded-lg border border-black/10 bg-gray-50 p-3">
-            <p className="inline-flex items-center gap-1 text-xs text-gray-500">
+          <div className="rounded-xl border border-black/10 bg-gray-50 p-4">
+            <p className="inline-flex items-center gap-1 text-[11px] font-semibold uppercase tracking-wide text-gray-500">
+              <HiCash className="text-sm" /> Interest Amount
+            </p>
+            <p className="mt-2 text-xl font-extrabold text-black">₹{interestAmount.toLocaleString()}</p>
+          </div>
+
+          <div className="rounded-xl border border-black/10 bg-gray-50 p-4">
+            <p className="inline-flex items-center gap-1 text-[11px] font-semibold uppercase tracking-wide text-gray-500">
               <HiCash className="text-sm" /> Total Paid
             </p>
-            <p className="mt-1 text-lg font-bold">₹{totalPaid.toLocaleString()}</p>
+            <p className="mt-2 text-xl font-extrabold text-black">₹{totalPaid.toLocaleString()}</p>
           </div>
 
-          <div className="rounded-lg border border-black/10 bg-gray-50 p-3">
-            <p className="inline-flex items-center gap-1 text-xs text-gray-500">
+          <div className="rounded-xl border border-black/10 bg-gray-50 p-4">
+            <p className="inline-flex items-center gap-1 text-[11px] font-semibold uppercase tracking-wide text-gray-500">
               <HiCash className="text-sm" /> Total Due
             </p>
-            <p className="mt-1 text-lg font-bold">₹{totalDue.toLocaleString()}</p>
-            <p className="mt-1 text-xs text-gray-500">Balance: ₹{balance.toLocaleString()}</p>
+            <p className="mt-2 text-xl font-extrabold text-black">₹{totalDue.toLocaleString()}</p>
+            <p className="mt-1 text-xs font-medium text-gray-500">Balance: ₹{balance.toLocaleString()}</p>
           </div>
         </div>
 
-        <div className="mb-4 flex items-start justify-between gap-4">
-          <p className="text-sm font-semibold text-gray-700">Loan Details</p>
+        <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className="text-sm font-semibold text-gray-800">Loan Details</p>
+            <p className="text-xs text-gray-500">Reference and calculation breakdown</p>
+          </div>
+
           <button
             type="button"
             onClick={() => setLoanDrawerOpen(true)}
-            className="inline-flex items-center gap-1 rounded-lg border border-black/10 px-3 py-2 text-sm font-semibold hover:bg-gray-50 cursor-pointer"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--primary)]/20 bg-[var(--primary)]/5 px-3 py-2 text-sm font-semibold text-[var(--primary)] hover:bg-[var(--primary)]/10 cursor-pointer"
           >
             <HiPencil className="text-sm" />
             Edit Loan
@@ -198,32 +210,38 @@ export default function LoanDetailsPage({ id }: { id: string }) {
         </div>
 
         <div className="grid gap-3 text-sm sm:grid-cols-2">
-          <p>
-            Interest: <span className="font-semibold">{loan.interestRate}%</span>
-          </p>
-          <p>
-            <span className="inline-flex items-center gap-1 text-gray-500 mr-1">
-              <HiCalendar className="text-sm" /> Start Date:
-            </span>
-            <span className="font-semibold">{loan.startDate}</span>
-          </p>
-          <p>
-            <span className="inline-flex items-center gap-1 text-gray-500 mr-1">
-              <HiCalendar className="text-sm" /> Accrued Months:
-            </span>
-            <span className="font-semibold">{loan.monthsElapsed ?? 0}</span>
-          </p>
-          <p>
-            Accrued Interest: <span className="font-semibold">₹{(loan.accruedInterest ?? 0).toLocaleString()}</span>
-          </p>
-          <p className="sm:col-span-2">
-            Pledged Properties:{" "}
-            <span className="font-semibold">
+          <div className="rounded-lg border border-black/10 bg-gray-50 p-3">
+            <p className="text-[11px] font-semibold uppercase tracking-wide text-gray-500">Interest Rate</p>
+            <p className="mt-1 text-base font-bold text-black">{loan.interestRate}%</p>
+          </div>
+
+          <div className="rounded-lg border border-black/10 bg-gray-50 p-3">
+            <p className="inline-flex items-center gap-1 text-[11px] font-semibold uppercase tracking-wide text-gray-500">
+              <HiCalendar className="text-sm" /> Start Date
+            </p>
+            <p className="mt-1 text-base font-bold text-black">{loan.startDate}</p>
+          </div>
+
+          <div className="rounded-lg border border-black/10 bg-gray-50 p-3">
+            <p className="inline-flex items-center gap-1 text-[11px] font-semibold uppercase tracking-wide text-gray-500">
+              <HiCalendar className="text-sm" /> Accrued Months
+            </p>
+            <p className="mt-1 text-base font-bold text-black">{loan.monthsElapsed ?? 0}</p>
+          </div>
+
+          <div className="rounded-lg border border-black/10 bg-gray-50 p-3">
+            <p className="text-[11px] font-semibold uppercase tracking-wide text-gray-500">Accrued Interest</p>
+            <p className="mt-1 text-base font-bold text-black">₹{(loan.accruedInterest ?? 0).toLocaleString()}</p>
+          </div>
+
+          <div className="rounded-lg border border-black/10 bg-gray-50 p-3 sm:col-span-2">
+            <p className="text-[11px] font-semibold uppercase tracking-wide text-gray-500">Pledged Properties</p>
+            <p className="mt-1 text-sm font-semibold text-black">
               {loan.pledgedProperties?.length
                 ? loan.pledgedProperties.join(", ")
                 : "-"}
-            </span>
-          </p>
+            </p>
+          </div>
         </div>
       </div>
 

@@ -7,11 +7,15 @@ const AUTH_COOKIE_NAME = "myfinance_auth";
 const publicRoutes = new Set([
   "/login",
   "/forgot-password",
+  "/contact-admin",
+  "/reset-password",
 ]);
 
 const publicApiRoutes = new Set([
   "/api/auth/login",
   "/api/auth/bootstrap-owner",
+  "/api/auth/forgot-password",
+  "/api/auth/reset-password",
 ]);
 
 function getSecret() {

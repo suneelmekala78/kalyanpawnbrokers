@@ -23,6 +23,13 @@ Create `.env.local`:
 MONGODB_URI=mongodb://127.0.0.1:27017
 JWT_SECRET=replace-with-a-long-random-secret
 OWNER_BOOTSTRAP_SECRET=replace-with-an-owner-bootstrap-secret
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+APPLICATION_MAIL=your-mailbox@example.com
+APPLICATION_MAIL_PASSWORD=your-mail-password-or-app-password
+SMTP_HOST=smtp.example.com
+SMTP_PORT=587
+SMTP_SECURE=false
+MAIL_FROM=MyFinance <no-reply@example.com>
 ```
 
 ## Install and Run

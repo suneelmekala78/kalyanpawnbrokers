@@ -1,5 +1,6 @@
 export type Loan = {
   _id: string;
+  loanId?: string;
   clientId: string;
   clientName: string;
   phone: string;

@@ -13,6 +13,8 @@ const UserSchema = new Schema(
     },
     isActive: { type: Boolean, default: true },
     lastLoginAt: { type: Date },
+    resetPasswordTokenHash: { type: String, default: null },
+    resetPasswordExpiresAt: { type: Date, default: null },
   },
   { timestamps: true },
 );
@@ -20,4 +22,15 @@ const UserSchema = new Schema(
 UserSchema.index({ email: 1 }, { unique: true });
 UserSchema.index({ role: 1, isActive: 1 });
 
-export const User = models.User || model("User", UserSchema);
+const existingUserModel = models.User;
+
+if (existingUserModel) {
+  if (!existingUserModel.schema.path("resetPasswordTokenHash")) {
+    existingUserModel.schema.add({
+      resetPasswordTokenHash: { type: String, default: null },
+      resetPasswordExpiresAt: { type: Date, default: null },
+    });
+  }
+}
+
+export const User = existingUserModel || model("User", UserSchema);

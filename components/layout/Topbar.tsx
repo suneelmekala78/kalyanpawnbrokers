@@ -1,8 +1,15 @@
 "use client";
 
-import { HiOutlineBell } from "react-icons/hi";
+import Link from "next/link";
 
-const Topbar = () => {
+interface TopbarProps {
+  userName: string;
+}
+
+const Topbar = ({ userName }: TopbarProps) => {
+  const cleanName = userName?.trim() || "User";
+  const userInitial = cleanName.charAt(0).toUpperCase();
+
   return (
     <header
       className="
@@ -12,13 +19,13 @@ const Topbar = () => {
       "
     >
       <div className="flex items-center gap-3">
-        <h1 className="font-bold text-lg">Admin Panel</h1>
+        <h1 className="text-[var(--primary)] font-bold text-lg">{cleanName}</h1>
       </div>
 
       <div className="flex items-center gap-4">
-        <button type="button" className="text-xl text-gray-600 hover:text-black">
+        {/* <button type="button" className="text-xl text-gray-600 hover:text-black">
           <HiOutlineBell />
-        </button>
+        </button> */}
 
         {/* <a
           href="https://getmaterials.netlify.app"
@@ -28,9 +35,14 @@ const Topbar = () => {
           View Site
         </a> */}
 
-        <div className="w-8 h-8 rounded-full bg-[var(--primary)] text-white flex items-center justify-center font-bold">
-          A
-        </div>
+        <Link
+          href="/settings"
+          className="w-8 h-8 rounded-full bg-[var(--primary)] text-white flex items-center justify-center font-bold"
+          aria-label="Go to settings"
+          title="Settings"
+        >
+          {userInitial}
+        </Link>
       </div>
     </header>
   );
