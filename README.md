@@ -1,4 +1,4 @@
-# KalyanPawnBrokers
+# KalyanPawnBrokers Finance Application
 
 Secure multi-tenant loan management application built with Next.js and MongoDB.
 
