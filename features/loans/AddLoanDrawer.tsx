@@ -327,7 +327,7 @@ export default function AddLoanDrawer({
             </div>
             <div className="space-y-1.5">
               <label className="text-xs font-semibold uppercase tracking-wide text-gray-500">
-                Daily Interest %
+                Monthly Interest %
               </label>
               <input
                 {...register("interestRate")}

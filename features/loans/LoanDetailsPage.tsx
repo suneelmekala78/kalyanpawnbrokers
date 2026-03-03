@@ -211,7 +211,7 @@ export default function LoanDetailsPage({ id }: { id: string }) {
 
         <div className="grid gap-3 text-sm sm:grid-cols-2">
           <div className="rounded-lg border border-black/10 bg-gray-50 p-3">
-            <p className="text-[11px] font-semibold uppercase tracking-wide text-gray-500">Daily Interest Rate</p>
+            <p className="text-[11px] font-semibold uppercase tracking-wide text-gray-500">Monthly Interest Rate</p>
             <p className="mt-1 text-base font-bold text-black">{loan.interestRate}%</p>
           </div>
 
